@@ -24,3 +24,9 @@ void computes_strategy_two(
     const int this_pid,
     const int total_number_of_processes
 );
+
+void computes_strategy_three(
+    int *sum,
+    const int this_pid,
+    const int total_number_of_processes
+);

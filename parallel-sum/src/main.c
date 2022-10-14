@@ -41,6 +41,11 @@ int main(int argc, char **argv) {
         case STRATEGY_TWO:
             computes_strategy_two(&sum, this_pid, total_number_of_processes);
             break;
+        case STRATEGY_THREE:
+            computes_strategy_three(&sum, this_pid, total_number_of_processes);
+            break;
+        default:
+            return EXIT_FAILURE;
     }
 
     if (everyone_must_print_the_result || this_pid == root_pid) {
