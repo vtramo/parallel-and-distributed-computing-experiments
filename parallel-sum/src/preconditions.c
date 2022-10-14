@@ -16,7 +16,6 @@ void check_the_parameters_are_all_numbers(const unsigned int argc, char **argv) 
     for (int i = 1; i < argc; i++) {
         if (!isNumber(argv[i])) {
             printf("Arguments must be integer numbers!\n");
-            print_correct_usage(argv[0]);
             exit(EXIT_FAILURE);
         }
     }
