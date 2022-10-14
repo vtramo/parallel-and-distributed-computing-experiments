@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     MPI_Reduce(&total_time, &max_total_time, 1, MPI_DOUBLE, MPI_MAX, root_pid, MPI_COMM_WORLD);
 
     if (this_pid == root_pid) {
-        printf("[TOTAL TIME] %f.\n", max_total_time);
+        printf("[TOTAL TIME] %f seconds.\n", max_total_time);
     }
 
     MPI_Finalize();
