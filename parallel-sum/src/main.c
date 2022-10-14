@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
     check_root_pid(root_pid, total_number_of_processes);
 
     const int total_numbers = argc - 3;
-    check_total_number_of_processes_greater_than_or_equal_to_the_total_numbers(
+    check_total_number_of_processes_less_than_or_equal_to_the_total_numbers(
         total_number_of_processes, 
         total_numbers
     );
