@@ -56,6 +56,10 @@ function computesParallelSum() {
 }
 
 function compareOutputWithExpectedOutput() {
+    if grep -q "TOTAL TIME" $OUTPUT_FILENAME; then
+        grep -v "TOTAL TIME" $OUTPUT_FILENAME > tmpfile && mv tmpfile $OUTPUT_FILENAME
+        rm tmpfile
+    fi
     diff $OUTPUT_FILENAME $EXCEPTED_OUTPUT_FILENAME > /dev/null
     exitCode=$?
 }

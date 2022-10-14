@@ -38,6 +38,8 @@ int main(int argc, char **argv) {
     const int last_pid = total_number_of_processes - 1;
     end += ((this_pid == last_pid) ? rest : 0);
 
+    const double t0 = MPI_Wtime();
+
     int sum = computes_local_sum(argv, start, end);
     
     switch (strategy_id) {
@@ -54,8 +56,19 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
     }
 
+    const double t1 = MPI_Wtime();
+
     if (everyone_must_print_the_result || this_pid == root_pid) {
         printf("[PID %d] Result: %d\n", this_pid, sum);
+    }
+
+    double total_time = t1 - t0;
+    double max_total_time;
+
+    MPI_Reduce(&total_time, &max_total_time, 1, MPI_DOUBLE, MPI_MAX, root_pid, MPI_COMM_WORLD);
+
+    if (this_pid == root_pid) {
+        printf("[TOTAL TIME] %f.\n", max_total_time);
     }
 
     MPI_Finalize();
