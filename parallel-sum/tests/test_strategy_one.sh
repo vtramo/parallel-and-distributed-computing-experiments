@@ -69,7 +69,7 @@ echo -e "$LINE\n"
 # TEST NUMBER 3
 
 echo -e \
-"Correct usage: ./../build/main <strategy_id> <root_pid> <numbers+>\n\
+"Correct usage: ../build/main <strategy_id> <root_pid> <numbers+>\n\
 There is no strategy with id -2!" > $EXCEPTED_OUTPUT_FILENAME
 
 NCPU="4"
@@ -96,7 +96,7 @@ echo -e "$LINE\n"
 # TEST NUMBER 4
 
 echo -e \
-"Correct usage: ./../build/main <strategy_id> <root_pid> \
+"Correct usage: ../build/main <strategy_id> <root_pid> \
 <numbers+>" > $EXCEPTED_OUTPUT_FILENAME
 
 NCPU="4"
@@ -124,7 +124,7 @@ echo -e "$LINE\n"
 
 echo -e \
 "Arguments must be integer numbers!
-Correct usage: ./../build/main <strategy_id> <root_pid> \
+Correct usage: ../build/main <strategy_id> <root_pid> \
 <numbers+>" > $EXCEPTED_OUTPUT_FILENAME
   
 NCPU="4"
@@ -199,6 +199,8 @@ echo -e "$LINE\n"
 
 # -----------------------------------
 
+
+
 # TEST NUMBER 8
 
 echo -e \
@@ -227,6 +229,60 @@ deletesGeneratedFiles
 echo -e "$LINE\n"
 
 # -----------------------------------
+
+
+
+# TEST NUMBER 9
+
+echo -e \
+"[PID 0] Result: -1195\n\
+[PID 1] Result: -1316\n\
+[PID 2] Result: -710\n\
+[PID 3] Result: -998" > $EXCEPTED_OUTPUT_FILENAME
+
+NCPU="4"
+STRATEGY="1"
+ROOT_PID="-1"
+NUMBERS="319 417 491 387 215 -62 -310 -282 -472 -190 -388 -340 291 81 -354 -480 321 -440 -440 357 -316"
+TEST_ID="9"
+  
+printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
+"When perform the sum with 4 processes with root PID\n\
+equals to -1 with 21 numbers, then the process with PID 0 should\n\
+print the correct total sum whereas all the others should\n\
+print correct partial sums."
+
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
+printTestResult
+deletesGeneratedFiles
+
+echo -e "$LINE\n"
+
+# -----------------------------------
+
+
+# TEST NUMBER 10
+
+echo -e "[PID 2] Result: 184" > $EXCEPTED_OUTPUT_FILENAME
+
+NCPU="4"
+STRATEGY="1"
+ROOT_PID="2"
+NUMBERS="319 417 491 387 215 -62 -310 -282 -472 -190 -388 -340 291 81 -354 -480 321 -440 -440 357 -316 35 87 100 -100 800 -213 -873 -222 -666 -101 234 2222 41 35"
+TEST_ID="10"
+  
+printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
+"When perform the sum with 4 processes with root PID\n\
+equals to 2 with 35 numbers, then the process with PID 2 should\n\
+print the correct total sum."
+
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
+printTestResult
+deletesGeneratedFiles
+
+echo -e "$LINE\n"
 
 printSummary
 

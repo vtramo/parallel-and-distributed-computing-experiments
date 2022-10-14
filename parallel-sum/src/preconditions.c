@@ -1,13 +1,13 @@
 #include "../include/preconditions.h"
 
 void print_correct_usage(char *program_name) {
-    printf("Correct usage: ./%s <strategy_id> <root_pid> <numbers+>\n", 
-        program_name == NULL ? "sum-project" : program_name);
+    printf("Correct usage: %s <strategy_id> <root_pid> <numbers+>\n", 
+        program_name == NULL ? "parallel-sum" : program_name);
 }
 
 void check_number_parameters(const unsigned int argc, char **argv) {
     if (argc < 4) {
-        printf("Correct usage: ./%s <strategy_id> <root_pid> <numbers+>\n", argv[0]);
+        print_correct_usage(argv[0]);
         exit(EXIT_FAILURE);
     }
 }
@@ -16,7 +16,7 @@ void check_the_parameters_are_all_numbers(const unsigned int argc, char **argv) 
     for (int i = 1; i < argc; i++) {
         if (!isNumber(argv[i])) {
             printf("Arguments must be integer numbers!\n");
-            printf("Correct usage: ./%s <strategy_id> <root_pid> <numbers+>\n", argv[0]);
+            print_correct_usage(argv[0]);
             exit(EXIT_FAILURE);
         }
     }
@@ -25,7 +25,7 @@ void check_the_parameters_are_all_numbers(const unsigned int argc, char **argv) 
 void check_strategy_id(const int strategy_id, const int total_number_of_processes, char *program_name) {
     if (strategy_id < 0 || strategy_id > 3) {
         printf("There is no strategy with id %d!\n", strategy_id);
-        printf("Correct usage: ./%s <strategy_id> <root_pid> <numbers+>\n", program_name);
+        print_correct_usage(program_name);
         exit(EXIT_FAILURE);
     } else if (strategy_id != 1 && !is_power_of_two(total_number_of_processes)) {
         printf("Strategy %d can only be applied to a number of processes which "\

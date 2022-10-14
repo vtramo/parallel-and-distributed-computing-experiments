@@ -29,11 +29,17 @@ int main(int argc, char **argv) {
     int this_pid;
     MPI_Comm_rank(MPI_COMM_WORLD, &this_pid);
 
-    const int number_of_locations = ceil(total_numbers / total_number_of_processes);
-    const int start = (this_pid * number_of_locations) + N_PARAMETERS_BEFORE_NUMBERS;
-    const int end   = (start + number_of_locations);
-    int sum = computes_local_sum(argv, start, end);
+    const int number_of_locations = total_numbers / total_number_of_processes;
+    const int rest = total_numbers % total_number_of_processes;
 
+    const int start = (this_pid * number_of_locations) + N_PARAMETERS_BEFORE_NUMBERS;
+    int end = (start + number_of_locations);
+
+    const int last_pid = total_number_of_processes - 1;
+    end += ((this_pid == last_pid) ? rest : 0);
+
+    int sum = computes_local_sum(argv, start, end);
+    
     switch (strategy_id) {
         case STRATEGY_ONE:
             computes_strategy_one(&sum, this_pid, root_pid, total_number_of_processes);
