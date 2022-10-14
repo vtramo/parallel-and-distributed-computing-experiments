@@ -2,7 +2,6 @@
 
 source ./test_global.sh
 
-
 # TESTING STRATEGY ONE
 
 echo "######################"
@@ -28,8 +27,8 @@ TEST_ID="1"
 printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 "When perform the sum with 4 processes with root PID\n\
 equals to -1, then the process with PID 0 should\n\
-print the total sum whereas all the others should\n\
-print partial sums."
+print the corrected total sum whereas all the others should\n\
+print corrected partial sums."
 
 computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
 compareOutputWithExpectedOutput
