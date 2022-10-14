@@ -295,6 +295,36 @@ echo -e "$LINE\n"
 
 # -----------------------------------
 
+# TEST NUMBER 8
+
+echo -e \
+"[PID 0] Result: 40\n\
+[PID 1] Result: 10\n\
+[PID 2] Result: 10\n\
+[PID 3] Result: 10" > $EXCEPTED_OUTPUT_FILENAME
+
+NCPU="4"
+STRATEGY="1"
+ROOT_PID="-1"
+NUMBERS="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1"
+TEST_ID="8"
+  
+printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
+"When perform the sum with 4 processes with root PID\n\
+equals to -1 with 40 numbers, then the process with PID 0 should\n\
+print the correct total sum whereas all the others should\n\
+print correct partial sums."
+
+computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+
+printTestResult
+
+deletesGeneratedFiles
+
+echo -e "$LINE\n"
+
+# -----------------------------------
+
 printSummary
 
 # ----------------------------------------------------------------------------------
