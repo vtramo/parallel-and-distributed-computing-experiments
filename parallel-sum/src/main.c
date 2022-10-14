@@ -2,6 +2,8 @@
 #include "../include/preconditions.h"
 #include "../include/parallelsum.h"
 
+const static unsigned int N_PARAMETERS_BEFORE_NUMBERS = 3;
+
 int main(int argc, char **argv) {
     check_number_parameters(argc, argv);
     check_the_parameters_are_all_numbers(argc, argv);
@@ -19,7 +21,7 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &total_number_of_processes);
     check_root_pid(root_pid, total_number_of_processes);
 
-    const int total_numbers = argc - 3;
+    const int total_numbers = argc - N_PARAMETERS_BEFORE_NUMBERS;
     check_total_number_of_processes_less_than_or_equal_to_the_total_numbers(
         total_number_of_processes, 
         total_numbers
@@ -29,7 +31,7 @@ int main(int argc, char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &this_pid);
 
     const int number_of_locations = ceil(total_numbers / total_number_of_processes);
-    const int start = (this_pid * number_of_locations) + 3;
+    const int start = (this_pid * number_of_locations) + N_PARAMETERS_BEFORE_NUMBERS;
     const int end   = (start + number_of_locations);
     int sum = computes_local_sum(argv, start, end);
 
