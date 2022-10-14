@@ -284,6 +284,42 @@ deletesGeneratedFiles
 
 echo -e "$LINE\n"
 
+# ----------------------------------------------------------------------------------
+
+EXPECTED_SUM=0
+function sum() {
+    sum=0
+    for n in $@; do
+        sum=$((sum+$n))
+    done
+    EXPECTED_SUM=$sum
+}
+
+# TEST NUMBER 11
+
+NCPU="4"
+STRATEGY="1"
+ROOT_PID="2"
+TOTAL_RANDOM_NUMBERS=850
+MAX_VALUE_GENERATED=999
+NUMBERS=$(../build/random $TOTAL_RANDOM_NUMBERS $MAX_VALUE_GENERATED)
+TEST_ID="10"
+
+sum $NUMBERS
+echo -e "[PID 2] Result: $EXPECTED_SUM" > $EXCEPTED_OUTPUT_FILENAME 
+
+printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
+"When perform the sum with 4 processes with root PID\n\
+equals to 2 with many random numbers, then the process with PID 2 should\n\
+print the correct total sum."
+
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
+printTestResult
+deletesGeneratedFiles
+
+echo -e "$LINE\n"
+
 printSummary
 
 # ----------------------------------------------------------------------------------
