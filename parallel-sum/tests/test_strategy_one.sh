@@ -1,92 +1,6 @@
 #!/bin/bash
 
-# ----------------------------------------------------------------------------------
-
-# COMPILATION 
-
-mpicc ../src/main.c ../src/preconditions.c ../src/parallelsum.c -o ../build/main -lm
-
-if [ $? -ne 0 ]; then
-    exit 1
-fi
-
-# ----------------------------------------------------------------------------------
-
-# [UI] COLORS & LINES
-
-GREEN='\033[1;32m'
-BRed='\033[1;31m'
-UYellow='\033[4;33m' 
-NC='\033[0m'
-BWhite='\033[1;37m'
-UWhite='\033[4;37m'
-BPurple='\033[1;35m' 
-LINE="-------------------------"
-
-# ------------------------------------------------------------------------------------
-
-# GLOBAL VARIABLES 
-
-totalTests=0
-EXCEPTED_OUTPUT_FILENAME="expectedOutput"
-OUTPUT_FILENAME="output"
-failures=0
-exitCode=0
-
-# --------------------------------------------------------------------------------------
-
-# FUNCTIONS
-
-function printTestHeader() {
-    echo -e "$LINE\n"
-    echo -e "${UWhite}| TEST #$5 |$NC\n"
-    echo -e "${BPurple}Description:$NC $6\n"
-    echo -e "${BWhite}INPUT$NC\n"
-    echo "- Number of processes: $1"
-    echo "- Strategy: $2"
-    echo "- Root PID: $3"
-    echo "- Numbers: $4"
-    echo -e "\n${BWhite}EXPECTED OUTPUT$NC:\n"
-    cat $EXCEPTED_OUTPUT_FILENAME
-    totalTests=$((totalTests+1))
-}
-
-function printTestResult() {
-    if [ $exitCode -ne 0 ]; then
-        printf "\n${BRed}BUT WAS:$NC\n\n"
-        cat $OUTPUT_FILENAME
-        printf "\n${BRed}TEST FAIL!$NC\n\n"
-        failures=$((failures+1))
-    else 
-        printf "\n${GREEN}TEST OK!$NC\n\n"
-    fi
-}
-
-function computesStrategyOne() {
-    mpirun -np $1 ../build/main $2 $3 $4 | sort | uniq > $OUTPUT_FILENAME
-    diff $OUTPUT_FILENAME $EXCEPTED_OUTPUT_FILENAME > /dev/null
-    exitCode=$?
-}
-
-function deletesGeneratedFiles() {
-    rm $EXCEPTED_OUTPUT_FILENAME $OUTPUT_FILENAME
-}
-
-function printSummary() {
-    printf "${UWhite}SUMMARY$NC\n\n"
-    testPassed=$((totalTests - failures))
-    printf "${BWhite}TOTAL TESTS: $totalTests$NC\n"
-    printf "${GREEN}TEST PASSED: $testPassed$NC\n"
-    printf "${BRed}FAILURES: $failures$NC\n\n"
-    echo -e $LINE
-}
-
-# ------------------------------------------------------------------------------------
-
-
-#########
-#TESTING#
-#########
+source ./test_global.sh
 
 
 # TESTING STRATEGY ONE
@@ -96,8 +10,6 @@ printf "#${UYellow}TESTING STRATEGY ONE${NC}#\n"
 echo "######################"
 
 # -----------------------------------
-
-
 
 # TEST NUMBER 1 
 
@@ -119,10 +31,9 @@ equals to -1, then the process with PID 0 should\n\
 print the total sum whereas all the others should\n\
 print partial sums."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -145,10 +56,9 @@ printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 "When perform the sum with 4 processes with PID 1 as root,\n\
 then the process with PID 1 should print the correct result."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -173,10 +83,9 @@ printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 "When passing an invalid id strategy should print\n\
 an error on stdout."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -201,10 +110,9 @@ printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 "When passing less than 4 parameters, should print\n\
 on stdout an error."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -229,10 +137,9 @@ TEST_ID="5"
 printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 "When passing a non-number argument should print an error."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -257,10 +164,9 @@ printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 a total number of numbers less than 4 should\n\
 print an error on the stdout."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -285,10 +191,9 @@ printTestHeader "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS" "$TEST_ID" \
 "When passing an invalid PID root should print\n\
 an error on the stdout."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
@@ -315,10 +220,9 @@ equals to -1 with 40 numbers, then the process with PID 0 should\n\
 print the correct total sum whereas all the others should\n\
 print correct partial sums."
 
-computesStrategyOne "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
-
+computesParallelSum "$NCPU" "$STRATEGY" "$ROOT_PID" "$NUMBERS"
+compareOutputWithExpectedOutput
 printTestResult
-
 deletesGeneratedFiles
 
 echo -e "$LINE\n"
