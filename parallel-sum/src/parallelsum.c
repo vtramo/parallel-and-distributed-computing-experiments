@@ -27,3 +27,25 @@ void computes_strategy_one(
         MPI_Send(sum, 1, MPI_INT, root_pid, tag, MPI_COMM_WORLD);
     }
 }
+
+void computes_strategy_two(
+    int *sum,
+    const int this_pid,
+    const int total_number_of_processes
+) {
+    for (int pid = 0; pid < (int)log2(total_number_of_processes); pid++) {
+        if (this_pid % (int)pow(2, pid) == 0) {
+            if (this_pid % (int)pow(2, pid + 1) == 0) {
+                const int pid_sender = this_pid + pow(2, pid);
+                const int tag = MESSAGE_TAG + pid_sender;
+                int partial_sum;
+                MPI_Recv(&partial_sum, 1, MPI_INT, pid_sender, tag, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+                *sum += partial_sum;
+            } else {
+                const int tag = MESSAGE_TAG + this_pid;
+                const int pid_receiver = this_pid - pow(2, pid);
+                MPI_Send(sum, 1, MPI_INT, pid_receiver, tag, MPI_COMM_WORLD);
+            }
+        }
+    }
+}

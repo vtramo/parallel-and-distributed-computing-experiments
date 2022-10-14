@@ -1,4 +1,3 @@
-#include <math.h>
 #include "../include/preconditions.h"
 #include "../include/parallelsum.h"
 
@@ -38,6 +37,9 @@ int main(int argc, char **argv) {
     switch (strategy_id) {
         case STRATEGY_ONE:
             computes_strategy_one(&sum, this_pid, root_pid, total_number_of_processes);
+            break;
+        case STRATEGY_TWO:
+            computes_strategy_two(&sum, this_pid, total_number_of_processes);
             break;
     }
 
