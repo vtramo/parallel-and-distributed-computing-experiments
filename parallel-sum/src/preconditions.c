@@ -22,12 +22,22 @@ void check_the_parameters_are_all_numbers(const unsigned int argc, char **argv) 
     }
 }
 
-void check_strategy_id(const int strategy_id, char **argv) {
+void check_strategy_id(const int strategy_id, const int total_number_of_processes, char *program_name) {
     if (strategy_id < 0 || strategy_id > 3) {
         printf("There is no strategy with id %d!\n", strategy_id);
-        printf("Correct usage: ./%s <strategy_id> <root_pid> <numbers+>\n", argv[0]);
+        printf("Correct usage: ./%s <strategy_id> <root_pid> <numbers+>\n", program_name);
+        exit(EXIT_FAILURE);
+    } else if (strategy_id != 1 && !is_power_of_two(total_number_of_processes)) {
+        printf("Strategy %d can only be applied to a number of processes which "\
+            "is a power of two!\n", strategy_id);
         exit(EXIT_FAILURE);
     }
+}
+
+bool is_power_of_two(const unsigned int number) {
+    int log = log2(number);
+    int poww = pow(2, log);
+    return number == poww;
 }
 
 void check_root_pid(const int root_pid, const int total_number_of_processes) {

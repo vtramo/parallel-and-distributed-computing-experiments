@@ -4,7 +4,7 @@
 
 # COMPILATION 
 
-mpicc ../src/main.c ../src/preconditions.c ../src/parallelsum.c -o ../build/main
+mpicc ../src/main.c ../src/preconditions.c ../src/parallelsum.c -o ../build/main -lm
 
 if [ $? -ne 0 ]; then
     exit 1

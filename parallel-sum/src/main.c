@@ -7,9 +7,6 @@ int main(int argc, char **argv) {
     check_number_parameters(argc, argv);
     check_the_parameters_are_all_numbers(argc, argv);
 
-    const int strategy_id = atoi(argv[1]);
-    check_strategy_id(strategy_id, argv);
-
     int tmp_root_pid = atoi(argv[2]);
     const int root_pid = (tmp_root_pid == -1 ? 0 : tmp_root_pid);
     const bool everyone_must_print_the_result = (tmp_root_pid == -1);
@@ -25,6 +22,9 @@ int main(int argc, char **argv) {
         total_number_of_processes, 
         total_numbers
     );
+
+    const int strategy_id = atoi(argv[1]);
+    check_strategy_id(strategy_id, total_number_of_processes, argv[0]);
 
     int this_pid;
     MPI_Comm_rank(MPI_COMM_WORLD, &this_pid);
