@@ -1,23 +1,30 @@
 #include "../include/preconditions.h"
 
 void print_correct_usage(char *program_name) {
-    printf("Correct usage: %s <strategy_id> <root_pid> <numbers+>\n", 
+    printf("Correct usage: %s <strategy_id> <root_pid> <file_path_numbers>\n", 
         program_name == NULL ? "parallel-sum" : program_name);
 }
 
 void check_number_parameters(const unsigned int argc, char **argv) {
-    if (argc < 4) {
+    if (argc != 4) {
         print_correct_usage(argv[0]);
         exit(EXIT_FAILURE);
     }
 }
 
-void check_the_parameters_are_all_numbers(const unsigned int argc, char **argv) {
-    for (int i = 1; i < argc; i++) {
-        if (!isNumber(argv[i])) {
-            printf("Arguments must be integer numbers!\n");
-            exit(EXIT_FAILURE);
-        }
+void check_parameters(char **argv) {
+    const char *strategy_id = argv[1];
+    const char *root_pid = argv[2];
+    const char *numbers_file = argv[3];
+    if (!is_number(strategy_id)) {
+        printf("The argument <strategy_id> must be a number!\n");
+        exit(EXIT_FAILURE);
+    } else if (!is_number(root_pid)) {
+        printf("The argument <root_pid> must be a number!\n");
+        exit(EXIT_FAILURE);
+    } else if (access(numbers_file, F_OK) != 0) {
+        printf("The argument <file_path_numbers> must be file that exists and contains numbers!\n");
+        exit(EXIT_FAILURE);
     }
 }
 
@@ -56,7 +63,7 @@ void check_total_number_of_processes_less_than_or_equal_to_the_total_numbers(
     }
 }
 
-bool isNumber(const char *s) {
+bool is_number(const char *s) {
     if (s == NULL) return false;
     for (int i = 0; s[i] != '\0'; i++) {
         if (i == 0 && s[i] == '-' && isdigit(s[i + 1])) continue;

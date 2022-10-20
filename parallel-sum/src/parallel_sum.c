@@ -1,9 +1,9 @@
-#include "../include/parallelsum.h"
+#include "../include/parallel_sum.h"
 
-int computes_local_sum(char **argv, const int start, const int end) {
+int computes_local_sum(const int *numbers, const int start, const int end) {
     int sum = 0;
     for (int i = start; i < end; i++) {
-        sum += atoi(argv[i]);
+        sum += numbers[i];
     }
     return sum;
 }
@@ -68,4 +68,23 @@ void computes_strategy_three(
         MPI_Recv(&partial_sum, 1, MPI_INT, pid_receiver, tag_sender, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         *sum += partial_sum;
     }
+}
+
+Numbers* read_numbers_from_file(char *file_name) {
+    FILE *file = fopen(file_name, "r");
+    int n = 0;
+    int total_numbers = 0;
+    int index = 0;
+    int dim = 1;
+    int *numbers = malloc(sizeof(int));
+    while (fscanf(file, "%d", &n) > 0) {
+        total_numbers++;
+        numbers[index++] = n;
+        numbers = realloc(numbers, sizeof(int) * ++dim);
+    }
+    fclose(file);
+    Numbers *bean_numbers = malloc(sizeof(numbers));
+    bean_numbers->size = total_numbers;
+    bean_numbers->numbers = numbers;
+    return bean_numbers;
 }

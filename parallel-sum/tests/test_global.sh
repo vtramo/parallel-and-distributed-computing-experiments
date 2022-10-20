@@ -2,9 +2,25 @@
 
 # ----------------------------------------------------------------------------------
 
+# PATHS
+
+MAIN_PROGRAM_PATH="../src/main.c"
+PRECONDITIONS_PROGRAM_PATH="../src/preconditions.c"
+PARALLEL_SUM_PROGRAM_PATH="../src/parallel_sum.c"
+
+RANDOM_PROGRAM_PATH="../src/random_integer_generator.c"
+
+BUILD_FOLDER="../build"
+
 # COMPILATION 
 
-mpicc ../src/main.c ../src/preconditions.c ../src/parallel_sum.c -o ../build/main -lm
+mpicc $MAIN_PROGRAM_PATH $PRECONDITIONS_PROGRAM_PATH $PARALLEL_SUM_PROGRAM_PATH -o ../build/main -lm
+
+if [ $? -ne 0 ]; then
+    exit 1
+fi
+
+gcc -o "${BUILD_FOLDER}/random" $RANDOM_PROGRAM_PATH
 
 if [ $? -ne 0 ]; then
     exit 1
@@ -27,6 +43,7 @@ LINE="-------------------------"
 
 # GLOBAL VARIABLES 
 
+NUMBERS_FILE_NAME="numbers"
 totalTests=0
 EXCEPTED_OUTPUT_FILENAME="expectedOutput"
 OUTPUT_FILENAME="output"
@@ -75,7 +92,7 @@ function printTestResult() {
 }
 
 function deletesGeneratedFiles() {
-    rm $EXCEPTED_OUTPUT_FILENAME $OUTPUT_FILENAME
+    rm $EXCEPTED_OUTPUT_FILENAME $OUTPUT_FILENAME $NUMBERS_FILE_NAME
 }
 
 function printSummary() {

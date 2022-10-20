@@ -1,5 +1,5 @@
 #include "../include/preconditions.h"
-#include "../include/parallelsum.h"
+#include "../include/parallel_sum.h"
 
 typedef struct {
     unsigned int start;
@@ -12,11 +12,9 @@ RangeExtremes* computes_range_extremes(
     unsigned int this_pid
 );
 
-const static unsigned int N_PARAMETERS_BEFORE_NUMBERS = 3;
-
 int main(int argc, char **argv) {
     check_number_parameters(argc, argv);
-    check_the_parameters_are_all_numbers(argc, argv);
+    check_parameters(argv);
 
     int tmp_root_pid = atoi(argv[2]);
     const int root_pid = (tmp_root_pid == -1 ? 0 : tmp_root_pid);
@@ -28,7 +26,10 @@ int main(int argc, char **argv) {
     MPI_Comm_size(MPI_COMM_WORLD, &total_number_of_processes);
     check_root_pid(root_pid, total_number_of_processes);
 
-    const int total_numbers = argc - N_PARAMETERS_BEFORE_NUMBERS;
+    char *file_path_numbers = argv[3];
+    const Numbers *numbers_bean = read_numbers_from_file(file_path_numbers);
+    const int total_numbers = numbers_bean->size;
+    const int *numbers = numbers_bean->numbers;
     check_total_number_of_processes_less_than_or_equal_to_the_total_numbers(
         total_number_of_processes, 
         total_numbers
@@ -45,14 +46,14 @@ int main(int argc, char **argv) {
         total_numbers,
         this_pid
     );
-    const int start = range_extremes->start + N_PARAMETERS_BEFORE_NUMBERS;
-    const int end = range_extremes->end + N_PARAMETERS_BEFORE_NUMBERS;
+    const int start = range_extremes->start;
+    const int end   = range_extremes->end;
     free(range_extremes);
 
     const double t0 = MPI_Wtime();
 
-    int sum = computes_local_sum(argv, start, end);
-    
+    int sum = computes_local_sum(numbers, start, end);
+
     switch (strategy_id) {
         case STRATEGY_ONE:
             computes_strategy_one(&sum, this_pid, root_pid, total_number_of_processes);

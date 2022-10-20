@@ -1,4 +1,2 @@
-[STRATEGY 1] Average Time 0.000118632 seconds.
-[STRATEGY 2] Average Time 0.000136296 seconds.
-[STRATEGY 3] Average Time 0.000164716 seconds.
-[ITERATIVE SUM] Average Time 5.156e-06 seconds.
+[STRATEGY 1] Average Time 0 seconds.
+[STRATEGY 2] Average Time 0 seconds.
