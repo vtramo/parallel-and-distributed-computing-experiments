@@ -122,10 +122,7 @@ echo -e "$LINE\n"
 
 # TEST NUMBER 5
 
-echo -e \
-"Arguments must be integer numbers!
-Correct usage: ../build/main <strategy_id> <root_pid> \
-<numbers+>" > $EXCEPTED_OUTPUT_FILENAME
+echo -e "Arguments must be integer numbers!" > $EXCEPTED_OUTPUT_FILENAME
   
 NCPU="4"
 STRATEGY="1"
@@ -236,9 +233,9 @@ echo -e "$LINE\n"
 
 echo -e \
 "[PID 0] Result: -1195\n\
-[PID 1] Result: -1316\n\
-[PID 2] Result: -710\n\
-[PID 3] Result: -998" > $EXCEPTED_OUTPUT_FILENAME
+[PID 1] Result: -1642\n\
+[PID 2] Result: -802\n\
+[PID 3] Result: -518" > $EXCEPTED_OUTPUT_FILENAME
 
 NCPU="4"
 STRATEGY="1"
@@ -284,16 +281,7 @@ deletesGeneratedFiles
 
 echo -e "$LINE\n"
 
-# ----------------------------------------------------------------------------------
-
-EXPECTED_SUM=0
-function sum() {
-    sum=0
-    for n in $@; do
-        sum=$((sum+$n))
-    done
-    EXPECTED_SUM=$sum
-}
+# -------------------------------
 
 # TEST NUMBER 11
 

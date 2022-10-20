@@ -58,7 +58,6 @@ function computesParallelSum() {
 function compareOutputWithExpectedOutput() {
     if grep -q "TOTAL TIME" $OUTPUT_FILENAME; then
         grep -v "TOTAL TIME" $OUTPUT_FILENAME > tmpfile && mv tmpfile $OUTPUT_FILENAME
-        rm tmpfile
     fi
     diff $OUTPUT_FILENAME $EXCEPTED_OUTPUT_FILENAME > /dev/null
     exitCode=$?
@@ -86,6 +85,15 @@ function printSummary() {
     printf "${GREEN}TEST PASSED: $testPassed$NC\n"
     printf "${BRed}FAILURES: $failures$NC\n\n"
     echo -e $LINE
+}
+
+EXPECTED_SUM=0
+function sum() {
+    sum=0
+    for n in $@; do
+        sum=$((sum+$n))
+    done
+    EXPECTED_SUM=$sum
 }
 
 # -----------------------------------------------------------------
