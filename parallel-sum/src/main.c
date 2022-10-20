@@ -1,6 +1,17 @@
 #include "../include/preconditions.h"
 #include "../include/parallelsum.h"
 
+typedef struct {
+    unsigned int start;
+    unsigned int end;
+} RangeExtremes;
+
+RangeExtremes* computes_range_extremes(
+    unsigned int total_number_of_processes,
+    unsigned int total_numbers,
+    unsigned int this_pid
+);
+
 const static unsigned int N_PARAMETERS_BEFORE_NUMBERS = 3;
 
 int main(int argc, char **argv) {
@@ -29,14 +40,14 @@ int main(int argc, char **argv) {
     int this_pid;
     MPI_Comm_rank(MPI_COMM_WORLD, &this_pid);
 
-    const int number_of_locations = total_numbers / total_number_of_processes;
-    const int rest = total_numbers % total_number_of_processes;
-
-    const int start = (this_pid * number_of_locations) + N_PARAMETERS_BEFORE_NUMBERS;
-    int end = (start + number_of_locations);
-
-    const int last_pid = total_number_of_processes - 1;
-    end += ((this_pid == last_pid) ? rest : 0);
+    RangeExtremes *range_extremes = computes_range_extremes(
+        total_number_of_processes,
+        total_numbers,
+        this_pid
+    );
+    const int start = range_extremes->start + N_PARAMETERS_BEFORE_NUMBERS;
+    const int end = range_extremes->end + N_PARAMETERS_BEFORE_NUMBERS;
+    free(range_extremes);
 
     const double t0 = MPI_Wtime();
 
@@ -74,4 +85,34 @@ int main(int argc, char **argv) {
     MPI_Finalize();
 
     return EXIT_SUCCESS;
+}
+
+RangeExtremes* computes_range_extremes(
+    unsigned int total_number_of_processes,
+    unsigned int total_numbers,
+    unsigned int this_pid
+) {
+    RangeExtremes *range_extremes = malloc(sizeof(RangeExtremes));
+
+    const int number_of_locations = total_numbers / total_number_of_processes;
+    const int rest = total_numbers % total_number_of_processes;
+
+    int start = this_pid * number_of_locations;
+    int end = start + number_of_locations;
+
+    int rest_offset_start = 0, rest_offset_end = 0;
+    if (rest != 0) {
+        if (this_pid == 0) {
+            rest_offset_end = 1;
+        } else if (this_pid <= rest) {
+            rest_offset_start = this_pid;
+            rest_offset_end = this_pid + ((this_pid < rest) ? 1 : 0);
+        } else {
+            rest_offset_start = rest_offset_end = rest;
+        }
+    }
+
+    range_extremes->start = start + rest_offset_start;
+    range_extremes->end = end + rest_offset_end;
+    return range_extremes;
 }
