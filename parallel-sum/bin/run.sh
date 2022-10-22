@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mpicc ../src/main.c ../src/preconditions.c ../src/parallelsum.c -o ../build/main -lm
+mpicc ../src/main.c ../src/preconditions.c ../src/parallel_sum.c -o ../build/main -lm
 
 BRed='\033[1;31m'
 BWhite='\033[1;37m'
@@ -140,7 +140,8 @@ function readPIDRoot() {
 
 function executeParallelSum() {
     printf "\n${BWhite}EXECUTING PARALLEL SUM$NC\n"
-    mpirun -np $N_CPU ../build/main $STRATEGY $PID_ROOT $@
+    echo "$@" > numbers
+    mpirun -np $N_CPU ../build/main $STRATEGY $PID_ROOT "numbers"
 }
 
 printf "${BWhite}PARALLEL SUM $NC\n\n"
@@ -159,3 +160,4 @@ readStrategy
 readPIDRoot
 
 executeParallelSum ${NUMBERS[@]}
+rm numbers
