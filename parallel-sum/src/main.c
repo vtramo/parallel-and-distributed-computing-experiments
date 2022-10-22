@@ -50,6 +50,7 @@ int main(int argc, char **argv) {
     const int end   = range_extremes->end;
     free(range_extremes);
 
+    MPI_Barrier(MPI_COMM_WORLD);
     const double t0 = MPI_Wtime();
 
     int sum = computes_local_sum(numbers, start, end);
