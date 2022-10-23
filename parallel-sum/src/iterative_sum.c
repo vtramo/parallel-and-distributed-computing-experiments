@@ -1,6 +1,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <float.h>
+#include <mpi.h>
 
 typedef struct {
     unsigned int size;
@@ -20,19 +22,18 @@ int main(int argc, char **argv) {
     const int total_numbers = bean_numbers->size;
     const int *numbers = bean_numbers->numbers;
 
-    clock_t t0 = clock();
+    const double t0 = MPI_Wtime();
 
     int sum = 0;
     for (int i = 0; i < total_numbers; i++) {
         sum += numbers[i];
     }
 
-    clock_t t1 = clock();
+    const double t1 = MPI_Wtime();
 
-    const double total_time = (double)(t1 - t0) / CLOCKS_PER_SEC;
 
     printf("[ITERATIVE SUM] Result: %d\n", sum);
-    printf("[TOTAL TIME] %f seconds.\n", total_time);
+    printf("[TOTAL TIME] %e seconds.\n", t1 - t0);
 
     return EXIT_SUCCESS;
 }
