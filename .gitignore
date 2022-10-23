@@ -60,3 +60,6 @@ parallel-sum/tests/performance_testing/test1.sh
 parallel-sum/tests/performance_testing/test2.sh
 
 numbers
+.idea
+.vscode
+camke-build-debug
