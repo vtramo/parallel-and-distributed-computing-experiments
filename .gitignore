@@ -53,3 +53,10 @@ dkms.conf
 
 # VS CODE
 .vscode
+parallel-sum/tests/performance_testing/2_STRATEGY_8_CPU
+parallel-sum/tests/performance_testing/high.txt
+parallel-sum/tests/performance_testing/performance_test_results.txt
+parallel-sum/tests/performance_testing/test1.sh
+parallel-sum/tests/performance_testing/test2.sh
+
+numbers
