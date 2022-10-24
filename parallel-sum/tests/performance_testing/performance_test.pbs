@@ -1,0 +1,31 @@
+#!/bin/bash
+
+#PBS -q studenti
+#PBS -l nodes=8:ppn=8
+#PBS -N performance_test
+#PBS -o performance_test.out
+#PBS -e performance_test.err
+
+sort -u $PBS_NODEFILE > hostlist
+NCPU=$(wc -l hostlist)
+
+echo -----------------------------
+echo 'This job is allocated on '${NCPU}' cpu(s)'
+echo 'Job is running on node(s):'
+cat hostlist
+PBS_O_WORKDIR=$PBS_O_HOME/parallel_sum_project/parallel_sum
+echo ------------------------------------------
+echo PBS: qsub is running on $PBS_O_HOST
+echo PBS: originating queue is $PBS_O_QUEUE
+echo PBS: executing queue is $PBS_QUEUE
+echo PBS: working directory is $PBS_O_WORKDIR
+echo PBS: execution mode is $PBS_ENVIRONMENT
+echo PBS: job identifier is $PBS_JOBID
+echo PBS: job name is $PBS_JOBNAME
+echo PBS: node file is $PBS_NODEFILE
+echo PBS: current home directory is $PBS_O_HOME
+echo PBS: PATH = $PBS_O_PATH
+echo -----------------------------------------
+
+#echo "$N_CPU $TOT_RANDOM_NUMBERS $TOT_ITERATIONS"
+$PBS_O_WORKDIR/tests/performance_testing/performance_test.sh "$N_CPU" "$TOT_RANDOM_NUMBERS" "$TOT_ITERATIONS"

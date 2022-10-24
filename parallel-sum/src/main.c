@@ -1,5 +1,5 @@
-#include "../include/preconditions.h"
-#include "../include/parallel_sum.h"
+#include "/homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/include/preconditions.h"
+#include "/homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/include/parallel_sum.h"
 #include <float.h>
 
 typedef struct {
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
     const int end   = range_extremes->end;
     free(range_extremes);
 
-    MPI_Barrier(MPI_COMM_WORLD);
+	MPI_Barrier(MPI_COMM_WORLD);
     const double t0 = MPI_Wtime();
 
     int sum = computes_local_sum(numbers, start, end);
@@ -82,7 +82,7 @@ int main(int argc, char **argv) {
     MPI_Reduce(&total_time, &max_total_time, 1, MPI_DOUBLE, MPI_MAX, root_pid, MPI_COMM_WORLD);
 
     if (this_pid == root_pid) {
-        printf("[TOTAL TIME] %e seconds.\n", max_total_time);
+        printf("[TOTAL TIME] %.17g seconds.\n", max_total_time);
     }
 
     MPI_Finalize();

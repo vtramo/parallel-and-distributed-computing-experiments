@@ -1,4 +1,4 @@
-#include "../include/parallel_sum.h"
+#include "/homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/include/parallel_sum.h"
 
 int computes_local_sum(const int *numbers, const int start, const int end) {
     int sum = 0;

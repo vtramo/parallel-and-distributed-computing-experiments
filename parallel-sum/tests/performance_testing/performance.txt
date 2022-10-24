@@ -1,6 +1,0 @@
-Thu Oct 20 05:53:28 PM CEST 2022
-
-[STRATEGY 1] Average Time 0.0366388 seconds.
-[STRATEGY 2] Average Time 0.0581242 seconds.
-[STRATEGY 3] Average Time 0.0811768 seconds.
-[ITERATIVE SUM] Average Time 0.0032741 seconds.

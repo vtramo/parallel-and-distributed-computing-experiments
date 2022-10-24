@@ -1,10 +1,21 @@
 #!/bin/bash
 
-mpicc ../src/main.c ../src/preconditions.c ../src/parallel_sum.c -o ../build/main -lm
-
 BRed='\033[1;31m'
 BWhite='\033[1;37m'
 NC='\033[0m'
+
+MAIN_PROGRAM="../build/main"
+MPI_MPICC_COMMAND="/usr/lib64/openmpi/1.4-gcc/bin/mpicc ../src/main.c ../src/preconditions.c ../src/parallel_sum.c -o ../build/main -lm -std=c99"
+MPI_EXEC_COMMAND="/usr/lib64/openmpi/1.4-gcc/bin/mpiexec -machinefile hostlist -n $N_CPU"
+
+MAX_RANDOM_NUMBER=5000
+RANDOM_INTEGER_GENERATOR_PROGRAM="../build/random"
+RANDOM_PROGRAM_COMPILATION="/usr/lib64/openmpi/1.4-gcc/bin/mpicc -o ../build/random ../src/random_integer_generator.c -std=c99"
+MPI_EXEC_RANDOM_PROGRAM="/usr/lib64/openmpi/1.4-gcc/bin/mpiexec -n 1"
+
+NUMBERS_FILE="numbers.txt"
+
+RUN_PBS="qsub" 
 
 isNumber='^-?[0-9]+$'
 
@@ -71,11 +82,14 @@ function readNumbers() {
             fi
         done
     done
-    NUMBERS=("${Numbers[@]}")
+    NUMBERS=$(echo "${Numbers[@]}")
+    echo "$NUMBERS" > "$NUMBERS_FILE"
 }
 
 function generateRandomNumbers() {
-    NUMBERS=$(../build/random $TOT_N 500)
+    $RANDOM_PROGRAM_COMPILATION
+    NUMBERS=$($MPI_EXEC_RANDOM_PROGRAM $RANDOM_INTEGER_GENERATOR_PROGRAM $TOT_N 500)
+    echo "$NUMBERS" > "$NUMBERS_FILE"
     printf "\n${BWhite}$TOT_N random numbers have just been generated\n"
 }
 
@@ -86,7 +100,7 @@ function printSummary() {
     echo "TOTAL NUMBERS: $TOT_N"
 
     sum=0
-    for i in $Numbers; do
+    for i in $NUMBERS; do
         sum=$((sum+$i))
     done
 
@@ -140,9 +154,11 @@ function readPIDRoot() {
 
 function executeParallelSum() {
     printf "\n${BWhite}EXECUTING PARALLEL SUM$NC\n"
-    echo "$@" > numbers
-    mpirun -np $N_CPU ../build/main $STRATEGY $PID_ROOT "numbers"
+    qsub -v N_CPU="$N_CPU",NUMBERS_FILE="$NUMBERS_FILE",STRATEGY="$STRATEGY",PID_ROOT="$PID_ROOT" ./run.pbs
+    printf "\n${BWhite}Il pbs run.pbs e' stato accodato. I risultati saranno stampati in run.out e run.err.$NC\n"
 }
+
+$MPI_MPICC_COMMAND >/dev/null 2>&1
 
 printf "${BWhite}PARALLEL SUM $NC\n\n"
 
@@ -159,5 +175,4 @@ printSummary ${NUMBERS[@]}
 readStrategy
 readPIDRoot
 
-executeParallelSum ${NUMBERS[@]}
-rm numbers
+executeParallelSum

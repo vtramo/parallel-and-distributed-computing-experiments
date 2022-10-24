@@ -14,13 +14,15 @@ BUILD_FOLDER="../build"
 
 # COMPILATION 
 
-mpicc $MAIN_PROGRAM_PATH $PRECONDITIONS_PROGRAM_PATH $PARALLEL_SUM_PROGRAM_PATH -o ../build/main -lm
+MPIRUN="/usr/lib64/openmpi/1.4-gcc/bin/mpiexec"
+MPICC="/usr/lib64/openmpi/1.4-gcc/bin/mpicc -std=c99 -lm"
+$MPICC $MAIN_PROGRAM_PATH $PRECONDITIONS_PROGRAM_PATH $PARALLEL_SUM_PROGRAM_PATH -o ../build/main
 
 if [ $? -ne 0 ]; then
     exit 1
 fi
 
-gcc -o "${BUILD_FOLDER}/random" $RANDOM_PROGRAM_PATH
+$MPICC -o "${BUILD_FOLDER}/random" $RANDOM_PROGRAM_PATH
 
 if [ $? -ne 0 ]; then
     exit 1
@@ -69,7 +71,7 @@ function printTestHeader() {
 }
 
 function computesParallelSum() {
-    mpirun -np $1 ../build/main $2 $3 $4 | sort | uniq > $OUTPUT_FILENAME
+    $MPIRUN -np $1 ../build/main $2 $3 $4 | sort | uniq > $OUTPUT_FILENAME
 }
 
 function compareOutputWithExpectedOutput() {

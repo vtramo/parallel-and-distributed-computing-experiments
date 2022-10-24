@@ -1,0 +1,4 @@
+In file included from /homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/src/main.c:2:
+/homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/include/parallel_sum.h:44:50: warning: no newline at end of file
+In file included from /homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/src/parallel_sum.c:1:
+/homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/include/parallel_sum.h:44:50: warning: no newline at end of file

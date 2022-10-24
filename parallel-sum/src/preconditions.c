@@ -1,4 +1,4 @@
-#include "../include/preconditions.h"
+#include "/homes/DMA/PDC/2022/TRMVCN99Y/parallel_sum_project/parallel_sum/include/preconditions.h"
 
 void print_correct_usage(char *program_name) {
     printf("Correct usage: %s <strategy_id> <root_pid> <file_path_numbers>\n", 
