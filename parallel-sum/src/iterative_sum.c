@@ -22,6 +22,8 @@ int main(int argc, char **argv) {
     const int total_numbers = bean_numbers->size;
     const int *numbers = bean_numbers->numbers;
 
+    MPI_Init(&argc, &argv);
+
     const double t0 = MPI_Wtime();
 
     int sum = 0;
@@ -34,6 +36,8 @@ int main(int argc, char **argv) {
 
     printf("[ITERATIVE SUM] Result: %d\n", sum);
     printf("[TOTAL TIME] %e seconds.\n", t1 - t0);
+
+    MPI_Finalize();
 
     return EXIT_SUCCESS;
 }
