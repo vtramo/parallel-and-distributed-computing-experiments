@@ -259,7 +259,11 @@ IntVector* uniform_distributor_numbers_v3(MPI_Comm comm, int *numbers, int total
 
     IntVector *int_vector = (IntVector*)malloc(sizeof(IntVector));
     int_vector->data = my_vector;
-    int_vector->size = sendcounts[this_pid];
+    int_vector->size = (this_pid == 0)
+        ? sendcounts[this_pid]
+        : this_pid < rest
+            ? number_of_locations_per_process + 1
+            : number_of_locations_per_process;
 
     free(sendcounts);
     free(displs);
