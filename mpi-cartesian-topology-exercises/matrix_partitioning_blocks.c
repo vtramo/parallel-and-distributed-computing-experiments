@@ -11,7 +11,6 @@
  *  Given P processes and a matrix M of dimensions RxC, creates a Cartesian topology
  *  of processes of dimensions pxq. It then identifies pxq sub-blocks of the matrix M
  *  and assigns them to each process that has the corresponding coordinates.
- *  of dimensions pxq, find and assign
  *
  *  Preconditions:
  *  - RxC >= P
