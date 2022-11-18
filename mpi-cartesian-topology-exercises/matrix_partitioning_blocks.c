@@ -36,7 +36,6 @@ void print_matrix(int rows, int columns, const char *matrix);
 int get_matrix_columns_command_line(char **argv);
 int get_matrix_rows_command_line(char **argv);
 int get_number_of_comm_grid_rows_command_line(char **argv, unsigned int total_processes);
-int get_number_of_rows_stdin(unsigned int number_of_processes);
 bool is_number(const char *s);
 void check_arguments(int argc, char **argv);
 
@@ -104,7 +103,7 @@ void print_matrix(int rows, int columns, const char *matrix) {
 }
 
 void check_arguments(int argc, char **argv) {
-    if (argc != 5) {
+    if (argc != 4) {
         fprintf(stderr, "Correct usage: %s <grid_comm_rows> <matrix_rows> <matrix_columns>\n", argv[0]);
         exit(EXIT_FAILURE);
     }
@@ -179,26 +178,8 @@ MatrixBlock* partition_and_distribute_matrix_blocks(
     return matrix_block;
 }
 
-int get_number_of_rows_stdin(const unsigned int number_of_processes) {
-    int rows;
-
-    bool is_valid_input = false;
-    do {
-        printf("Enter the number 'p' of rows: ");
-        scanf("%d", &rows);
-
-        if (rows > number_of_processes) {
-            printf("\nThe number of rows can't be greater than the number of processes!\n\n");
-        } else {
-            is_valid_input = true;
-        }
-    } while(!is_valid_input);
-
-    return rows;
-}
-
 int get_matrix_columns_command_line(char **argv) {
-    const static int MATRIX_COLUMNS_ARGV_INDEX = 4;
+    const static int MATRIX_COLUMNS_ARGV_INDEX = 3;
     const static char *MATRIX_COLUMNS_ARGV_NAME = "<matrix_columns>";
     if (!is_number(argv[MATRIX_COLUMNS_ARGV_INDEX])) {
         fprintf(stderr, "%s must be a positive number!\n", MATRIX_COLUMNS_ARGV_NAME);
@@ -213,7 +194,7 @@ int get_matrix_columns_command_line(char **argv) {
 }
 
 int get_matrix_rows_command_line(char **argv) {
-    const static int MATRIX_ROWS_ARGV_INDEX = 3;
+    const static int MATRIX_ROWS_ARGV_INDEX = 2;
     const static char *MATRIX_ROWS_ARGV_NAME = "<matrix_rows>";
     if (!is_number(argv[MATRIX_ROWS_ARGV_INDEX])) {
         fprintf(stderr, "%s must be a positive number!\n", MATRIX_ROWS_ARGV_NAME);
@@ -230,7 +211,7 @@ int get_matrix_rows_command_line(char **argv) {
 }
 
 int get_number_of_comm_grid_rows_command_line(char **argv, const unsigned int total_processes) {
-    const static int GRID_COMM_ROWS_ARGV_INDEX = 2;
+    const static int GRID_COMM_ROWS_ARGV_INDEX = 1;
     const static char *GRID_COMM_ROWS_ARGV_NAME = "<grid_comm_rows>";
     if (!is_number(argv[GRID_COMM_ROWS_ARGV_INDEX])) {
         fprintf(stderr, "%s must be a positive number!\n", GRID_COMM_ROWS_ARGV_NAME);
