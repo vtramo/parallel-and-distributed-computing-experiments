@@ -93,7 +93,7 @@ function read_vector() {
 
 function generate_random_numbers() {
     total_random_numbers=$1
-    gcc -o random_integer_generator random_integer_generator.c
+    gcc -o random_integer_generator random_integer_generator.c -std=c99
     numbers=$(./random_integer_generator $total_random_numbers $MAX_RANDOM_NUMBER)
     printf "\n${BWhite}$total_random_numbers random numbers have just been generated\n"
     rm random_integer_generator
@@ -136,7 +136,7 @@ function choose_printing_mode() {
 
 function execute_pbs() {
     printf "\n${BWhite}EXECUTING PARALLEL MATRIX VECTOR PRODUCT$NC\n"
-    qsub -v total_threads="$total_threads",rows="$rows",columns="$columns",printing_mode="$printing_mode" ./start_parallel_vector_matrix_product.pbs
+    qsub -v total_threads="$total_threads",rows="$rows",columns="$columns",printing_mode="$printing_mode" ./parallel_vector_matrix_product.pbs
     printf "\n${BWhite}Il pbs parallel_vector_matrix_product.pbs e' stato accodato. I risultati saranno stampati in parallel_vector_matrix_product.out e parallel_vector_matrix_product.err.$NC\n"
 }
 

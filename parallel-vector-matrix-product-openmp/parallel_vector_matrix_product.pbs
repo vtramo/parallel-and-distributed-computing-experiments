@@ -2,7 +2,7 @@
 
 #PBS -q studenti
 #PBS -l nodes=1:ppn=8
-#PBS –N parallel_vector_matrix_product
+#PBS -N parallel_vector_matrix_product
 #PBS -o parallel_vector_matrix_product.out
 #PBS -e parallel_vector_matrix_product.err
 
@@ -38,7 +38,7 @@ time_single_thread_vector_matrix_product=0
 function execute_parallel_vector_matrix_product() {
     export OMP_NUM_THREADS=$total_threads
     export PSC_OMP_AFFINITY=TRUE
-    gcc -fopenmp -lgomp -o $PBS_O_WORKDIR/parallel_vector_matrix_product $PBS_O_WORKDIR/parallel_vector_matrix_product.c
+    gcc -fopenmp -lgomp -o $PBS_O_WORKDIR/parallel_vector_matrix_product $PBS_O_WORKDIR/parallel_vector_matrix_product.c -std=c99
 
     for ((i = 0; i < $TOT_ITERATIONS; i++)); do
         result_parallel_vector_matrix_product=$($PBS_O_WORKDIR/parallel_vector_matrix_product $rows $columns $FILENAME_MATRIX_VALUES $FILENAME_VECTOR_VALUES $printing_mode)
@@ -52,7 +52,7 @@ function execute_parallel_vector_matrix_product() {
 }
 
 function execute_single_thread_vector_matrix_product() {
-    gcc -o $PBS_O_WORKDIR/single_thread_vector_matrix_product $PBS_O_WORKDIR/single_thread_vector_matrix_product.c
+    gcc -o $PBS_O_WORKDIR/single_thread_vector_matrix_product $PBS_O_WORKDIR/single_thread_vector_matrix_product.c -std=c99
 
     for ((i = 0; i < $TOT_ITERATIONS; i++)); do
         result_single_thread_vector_matrix_product=$($PBS_O_WORKDIR/single_thread_vector_matrix_product $rows $columns $FILENAME_MATRIX_VALUES $FILENAME_VECTOR_VALUES)
