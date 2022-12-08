@@ -183,3 +183,4 @@ void free_matrix(double **A, int rows) {
     }
     free(A);
 }
+
