@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <sys/time.h>
 #include <stdio.h>
+#include <time.h>
 
 typedef struct {
     int rows;
@@ -40,16 +41,17 @@ int main(int argc, char **argv) {
     struct timeval time;
     double t0, t1;
 
-    gettimeofday(&time, NULL);
-    t0 = time.tv_sec + (time.tv_usec / 100000.0);
+    double time_spent = 0.0;
+    clock_t begin = clock();
 
     // Calculates solution
     MatrixBlock *C = multiply_matrices(&matrix_blocks[0], &matrix_blocks[1]);
 
-    gettimeofday(&time, NULL);
-    t1 = time.tv_sec + (time.tv_usec / 100000.0);
+    clock_t end = clock();
 
-    printf("[TOTAL TIME SINGLE PROCESS] %e seconds.\n", t1 - t0);
+    time_spent += (double)(end - begin) / CLOCKS_PER_SEC;
+
+    printf("[TOTAL TIME SINGLE PROCESS] %f seconds.\n", time_spent);
 
     return EXIT_SUCCESS;
 }

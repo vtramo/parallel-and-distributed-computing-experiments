@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Get local matrix block A */
+    /* Get local matrix block A for this process */
     MatrixBlock *local_matrix_block_A =
         partition_and_distribute_matrix_blocks(
             comm_grid,
@@ -126,7 +126,7 @@ int main(int argc, char **argv) {
             global_matrix_A
         );
 
-    /* Get local matrix block B */
+    /* Get local matrix block B for this process */
     MatrixBlock *local_matrix_block_B =
         partition_and_distribute_matrix_blocks(
             comm_grid,
@@ -142,15 +142,22 @@ int main(int argc, char **argv) {
     // Start BROADCAST MULTIPLY ROLLING STEP 0
     // Each block of matrix A that is on the main diagonal is distributed to
     // all processes that are on the same row of the block.
-    MatrixBlock *local_main_diagonal_matrix_block_A = distribute_main_diagonal_blocks(comm_grid, local_matrix_block_A);
+    MatrixBlock *local_main_diagonal_matrix_block_A =
+        distribute_main_diagonal_blocks(
+            comm_grid,
+            local_matrix_block_A
+        );
 
     // Calculates a component of the local solution
-    MatrixBlock *local_result_matrix = multiply_matrices(local_main_diagonal_matrix_block_A, local_matrix_block_B);
+    MatrixBlock *local_result_matrix = multiply_matrices(
+        local_main_diagonal_matrix_block_A,
+        local_matrix_block_B
+    );
 
     // At each new step, the diagonal that is #step times upward from the main diagonal is considered.
     // Then the same operation as in step 0 is repeated.
     // In addition, each process passes its current block of B to
-    // the processor located just above it in the process grid.
+    // the process located just above it in the process grid.
     MatrixBlock *current_matrix_B = local_matrix_block_B;
     for (int step = 1; step < comm_grid_dim; step++) {
         MatrixBlock *matrix_blocks = broadcast_rolling(
@@ -160,7 +167,8 @@ int main(int argc, char **argv) {
             current_matrix_B
         );
         current_matrix_B = &matrix_blocks[1];
-        // At each step a new component of the local solution is calculated, and it is added to the total local solution
+        // At each step a new component of the local solution is calculated,
+        // and it is added to the total local solution
         local_result_matrix = sum_matrices(
             local_result_matrix,
             multiply_matrices(&matrix_blocks[0], current_matrix_B)
@@ -524,10 +532,10 @@ int get_comm_grid_dim_command_line(char **argv, const unsigned int total_process
         MPI_Finalize();
         exit(EXIT_FAILURE);
     }
-    if (grid_comm_dim > total_processes) {
+    if (grid_comm_dim != total_processes / grid_comm_dim) {
         fprintf(
             stderr,
-            "%s can't be greater than the number of processes %d!\n",
+            "%s is incorrect (total processes %d)!\n",
             GRID_COMM_DIM_ARGV_NAME, total_processes
         );
         MPI_Finalize();

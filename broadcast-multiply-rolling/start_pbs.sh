@@ -43,6 +43,7 @@ function choose_printing_mode() {
                 value="false"
             fi
             echo "$(cat .env | sed "s/${PRINT_MODE}/${value}/")" > .env
+            source .env
         fi
     done
 }
