@@ -35,6 +35,14 @@ MatrixBlock *broadcast_rolling(
     MatrixBlock *local_matrix_B
 );
 
+MatrixBlock *gather_partial_solutions(
+    int root,
+    MPI_Comm *comm_grid,
+    MatrixBlock *partial_solution,
+    int global_matrix_rows,
+    int global_matrix_columns
+);
+
 MatrixBlock *multiply_matrices(MatrixBlock *A, MatrixBlock *B);
 MatrixBlock *sum_matrices(MatrixBlock *A, MatrixBlock *B);
 
@@ -59,7 +67,8 @@ void print_result(
     const MPI_Comm *comm_grid,
     int *global_matrix_A,
     int *global_matrix_B,
-    MatrixBlock *local_result_matrix
+    MatrixBlock *local_result_matrix,
+    MatrixBlock *total_result_matrix
 );
 
 int main(int argc, char **argv) {
@@ -181,12 +190,21 @@ int main(int argc, char **argv) {
         *comm_grid
     );
 
+    MatrixBlock *total_result_matrix = gather_partial_solutions(
+        0,
+        comm_grid,
+        local_result_matrix,
+        square_matrix_dim,
+        square_matrix_dim
+    );
+
     print_result(
         square_matrix_dim,
         comm_grid,
         global_matrix_A,
         global_matrix_B,
-        local_result_matrix
+        local_result_matrix,
+        total_result_matrix
     );
 
     if (pid_comm_grid == 0) {
@@ -485,6 +503,72 @@ MatrixBlock *broadcast_rolling(
     return matrix_blocks;
 }
 
+MatrixBlock *gather_partial_solutions(
+    const int root,
+    MPI_Comm *comm_grid,
+    MatrixBlock *partial_solution,
+    const int global_matrix_rows,
+    const int global_matrix_columns
+) {
+    int pid_comm_grid;
+    MPI_Comm_rank(*comm_grid, &pid_comm_grid);
+
+    int dims[2], periods[2], coords[2];
+    MPI_Cart_get(*comm_grid, 2, dims, periods, coords);
+    const int comm_grid_total_rows = dims[0];
+    const int comm_grid_total_columns = dims[1];
+    const int total_processes = comm_grid_total_rows * comm_grid_total_columns;
+
+    int displs[total_processes];
+    int recv_counts[total_processes];
+    for (int i = 0; i < comm_grid_total_rows; i++) {
+        for (int j = 0; j < comm_grid_total_columns; j++) {
+            displs[i * comm_grid_total_columns + j] =
+                    i * global_matrix_columns * partial_solution->rows +
+                    j * partial_solution->columns;
+            recv_counts[i * comm_grid_total_columns + j] = 1;
+        }
+    }
+
+    MPI_Datatype blocktype_not_resized;
+    MPI_Datatype blocktype_resized;
+    MPI_Type_vector(
+        partial_solution->rows,
+    partial_solution->columns,
+        global_matrix_columns,
+        MPI_INT,
+        &blocktype_not_resized
+    );
+    MPI_Type_create_resized( blocktype_not_resized, 0, sizeof(int), &blocktype_resized);
+    MPI_Type_commit(&blocktype_resized);
+
+    int *total_solution_data = NULL;
+    if (pid_comm_grid == root) {
+        total_solution_data = (int*) malloc(sizeof(int) * global_matrix_columns * global_matrix_rows);
+    }
+
+    MPI_Gatherv(
+        partial_solution->data,
+        partial_solution->rows * partial_solution->columns,
+        MPI_INT,
+        total_solution_data,
+        recv_counts,
+        displs,
+        blocktype_resized,
+        root,
+        MPI_COMM_WORLD
+    );
+
+    MatrixBlock *total_solution = NULL;
+    if (pid_comm_grid == root) {
+        total_solution = (MatrixBlock*) malloc(sizeof(MatrixBlock));
+        total_solution->rows = global_matrix_rows;
+        total_solution->columns = global_matrix_columns;
+        total_solution->data = total_solution_data;
+    }
+    return total_solution;
+}
+
 void check_arguments(int argc, char **argv) {
     if (argc != 3) {
         fprintf(stderr, "Correct usage: %s <grid_comm_dim> <square_matrix_dim>\n", argv[0]);
@@ -552,7 +636,8 @@ void print_result(
     const MPI_Comm *comm_grid,
     int *global_matrix_A,
     int *global_matrix_B,
-    MatrixBlock *local_result_matrix
+    MatrixBlock *local_result_matrix,
+    MatrixBlock *total_result_matrix
 ) {
     int dims[2], periods[2], coords[2];
     MPI_Cart_get(*comm_grid, 2, dims, periods, coords);
@@ -569,6 +654,8 @@ void print_result(
             print_matrix(square_matrix_dim, square_matrix_dim, global_matrix_A);
             printf("Matrix B: \n");
             print_matrix(square_matrix_dim, square_matrix_dim, global_matrix_B);
+            printf("Matrix C: \n");
+            print_matrix(total_result_matrix->rows, total_result_matrix->columns, total_result_matrix->data);
         }
         MPI_Barrier(MPI_COMM_WORLD);
         printf("[PID %d Coords (%d, %d)] Local result: \n", pid_comm_grid, coords[0], coords[1]);

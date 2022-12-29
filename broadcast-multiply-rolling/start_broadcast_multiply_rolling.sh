@@ -1,6 +1,5 @@
 #!/bin/bash
 
-source .env
 MPICC="mpicc"
 
 BRed='\033[1;31m'
@@ -51,6 +50,7 @@ function choose_printing_mode() {
             printf "${BRed}Answer with Y or N!$NC\n"
         fi
 
+        source .env
         export PRINT_MODE="${boolean_values[$input]}"
     done
 }
