@@ -5,3 +5,4 @@ Resolution and testing of the following parallel and distributed computing probl
 - **parallel-sum** with different strategies
 - **parallel-vector-matrix-product** with OpenMPI
 - **parallel-vector-matrix-product-openmp** with OpenMP
+- **broadcast-multiply-rolling** with OpenMPI
